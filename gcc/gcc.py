@@ -6,7 +6,9 @@ import ops
 
 def gcc(waveforms, max_delay=None, weighting=None, scale=None):
     """
-    Estimates the cross-correlation sequence of a random process of length M from the generalized cross-correlation (fft/ifft), as specified in (Knapp & Carter 1976). By default, there is neither normalisation nor scaling and the output sequence has a length of min(2*M+1, max_delay)
+    Estimates the cross-correlation sequence of a random process of length M from the generalized 
+    cross-correlation (fft/ifft), as specified in (Knapp & Carter 1976). By default, there is neither
+    normalisation nor scaling and the output sequence has a length of min(2*M+1, max_delay)
     Parameters:
         waveforms: tensor arrays of time signals with shape [batch(optional), channel, waveform]
         max_delay: maximum lag in number of samples
