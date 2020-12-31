@@ -33,7 +33,10 @@ def gcc(x0, x1, max_delay=None, weighting=None, scale=None):
         raise ValueError(f"scale {scale} not supported.")
     with tf.name_scope("gcc"):
         with tf.control_dependencies(
-            [assert_rank_in(x0, [1, 2]), assert_rank_in(x1, [1, 2])]
+            [
+                tf.debugging.assert_rank_in(x0, [1, 2]),
+                tf.debugging.assert_rank_in(x1, [1, 2]),
+            ]
         ):
             # Get lengths
             m = 2 * x0.get_shape()[-1] - 1
