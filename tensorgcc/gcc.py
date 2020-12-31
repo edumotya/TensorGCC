@@ -94,9 +94,12 @@ def _scale(x, gcc, scale):
         if scale == "biased":
             return gcc / m
         elif scale == "unbiased":
-            L = int((gcc.get_shape()[-1] - 1) / 2)
+            gcc_len = gcc.get_shape()[-1]
+            L = int((gcc_len - 1) / 2)
             den = m - np.abs(np.arange(-L, L + 1))
             den[den <= 0] = 1
+            # workaround for gcc estimators with even number of samples
+            den = np.pad(den, (0, gcc_len - len(den)), mode="edge")
             return gcc / den
         else:
             return gcc
