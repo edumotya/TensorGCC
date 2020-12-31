@@ -1,5 +1,5 @@
 # TensorGCC
-This is a TensorFlow implementation of the generalized cross-correlation (GCC), which can be used at any point of the graph. It implements the Carter GCC, as well as the  PHAT transform.
+This is a TensorFlow implementation of the generalized cross-correlation (GCC), which can be used at any point of the graph. It implements the Carter GCC, as well as the  PHAT transform. The only limitation of this implementation is that the length of the input signals must be statically defined.
 
 Example results for pseudo-chirp signals embedded in real noise:
 

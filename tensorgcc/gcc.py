@@ -39,7 +39,12 @@ def gcc(x0, x1, max_delay=None, weighting=None, scale=None):
             ]
         ):
             # Get lengths
-            m = 2 * x0.get_shape()[-1] - 1
+            num_samples = x0.get_shape()[-1]
+            if num_samples is None:
+                raise ValueError(
+                    "The inner most dimension of x0 and x1 must be statically defined."
+                )
+            m = 2 * num_samples - 1
             if max_delay is None:
                 ncorr = m
             else:
