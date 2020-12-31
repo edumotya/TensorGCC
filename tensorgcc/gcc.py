@@ -19,8 +19,8 @@ def gcc(x0, x1, max_delay=None, weighting=None, scale=None):
     cross-correlation (fft/ifft), as specified in (Knapp & Carter 1976). By default, there is neither
     normalisation nor scaling and the output sequence has a length of min(2*M+1, max_delay)
     Parameters:
-        x0: waveform tensor array with shape [num_samples]
-        x1: waveform tensor array with shape [num_samples]
+        x0: waveform tensor array with shape [batch_size(optional), num_samples]
+        x1: waveform tensor array with shape [batch_size(optional), num_samples]
         max_delay: maximum lag in number of samples
         weighting: frequency domain filtering: None, 'PHAT'
         scale: cross-correlation scaling: None, 'biased', 'unbiased'
@@ -33,7 +33,7 @@ def gcc(x0, x1, max_delay=None, weighting=None, scale=None):
         raise ValueError(f"scale {scale} not supported.")
     with tf.name_scope("gcc"):
         with tf.control_dependencies(
-            [tf.debugging.assert_rank(x0, 1), tf.debugging.assert_rank(x1, 1)]
+            [assert_rank_in(x0, [1, 2]), assert_rank_in(x1, [1, 2])]
         ):
             # Get lengths
             m = 2 * x0.get_shape()[-1] - 1
@@ -43,8 +43,8 @@ def gcc(x0, x1, max_delay=None, weighting=None, scale=None):
                 ncorr = min(m, int(max_delay))
             nfft = 2 ** next_power_of_two(m)
             # Remove DC
-            x0 = x0 - tf.reduce_mean(x0, keepdims=True)
-            x1 = x1 - tf.reduce_mean(x1, keepdims=True)
+            x0 = x0 - tf.reduce_mean(x0, axis=-1, keepdims=True)
+            x1 = x1 - tf.reduce_mean(x1, axis=-1, keepdims=True)
             return _gcc(x0, x1, nfft, ncorr, weighting, scale)
 
 
@@ -86,13 +86,12 @@ def _filter(R01, weighting):
 
 
 def _scale(x, gcc, scale):
-    m = x.get_shape()[0]
+    m = x.get_shape()[-1]
     with tf.name_scope("scale"):
         if scale == "biased":
             return gcc / m
         elif scale == "unbiased":
-            # CHECKME
-            L = int((gcc.get_shape()[0] - 1) / 2)
+            L = int((gcc.get_shape()[-1] - 1) / 2)
             den = m - np.abs(np.arange(-L, L + 1))
             den[den <= 0] = 1
             return gcc / den
