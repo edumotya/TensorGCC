@@ -73,9 +73,9 @@ def _gcc(x0, x1, nfft, ncorr, weighting, scale):
 def _shift(x, N, ncorr):
     assert N > ncorr
     with tf.name_scope("ifft_shift"):
-        left_x = x[:ncorr]
-        right_x = x[N - ncorr : N - 1]
-        y = tf.concat([right_x, left_x], axis=0)
+        left_x = x[..., :ncorr]
+        right_x = x[..., N - ncorr : N - 1]
+        y = tf.concat([right_x, left_x], axis=-1)
     return y
 
 
